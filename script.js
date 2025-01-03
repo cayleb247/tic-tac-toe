@@ -4,24 +4,47 @@ const gameBoard = (function () {
     return { positions, placeMarker }
 })();
 
-gameBoard.placeMarker("X", 0);
-gameBoard.placeMarker("X", 3);
+gameBoard.placeMarker("X", 2);
+gameBoard.placeMarker("X", 4);
 gameBoard.placeMarker("X", 6);
 console.log(gameBoard.positions);
 
-const checkWin = function () {
+const checkWin = function (marker) {
     let positions = gameBoard.positions;
-    for (let column=0; column<3; column++) {
-        let colScore = 0;
-        for (let i=column; i<(6+i); i+3) {
-            if (positions[i] == "X") {
+
+    // check columns first
+    for (let column=0; column<3; column++) { // check all three columns
+        let colScore = 0; // variable to tell if 3 in a row has been reached
+        for (let i=column; i<=(6+column); i+=3) {
+            if (positions[i] == marker) {
                 colScore += 1;
             }
         }
         if (colScore == 3) {
-            return "X has won!";
+            return `${marker} has won!`
         }
     }
+
+    // check rows
+    for (let row=0; row<=6; row+=3) {
+        let rowScore = 0;
+        for (let i=row; i<(row+3); i++) {
+            if (positions[i] == marker) {
+                rowScore += 1;
+            }
+        }
+        if (rowScore == 3) {
+            return `${marker} has won!`
+        }
+    }
+
+    // check diagonals
+    if (positions[0] && positions[4] && positions[8] == marker
+        || positions[2] && positions[4] && positions[6] == marker
+    ) {
+        return `${marker} has won!`
+    }
+
 }
 
-console.log(checkWin());
+console.log(checkWin("X"));
