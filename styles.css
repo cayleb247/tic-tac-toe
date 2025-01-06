@@ -32,12 +32,10 @@ body {
     background-color: #978376;
     border: none;
     font-family: "Lato";
-    font-weight: 500;
+    font-weight: 600;
     font-size: .75rem;
 
 }
-
-
 
 .grid-container {
     display: grid;

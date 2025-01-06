@@ -27,7 +27,7 @@ const checkWin = function (marker) {
             }
         }
         if (colScore == 3) {
-            return alert(`${marker} has won!`)
+            return true
         }
     }
 
@@ -40,17 +40,16 @@ const checkWin = function (marker) {
             }
         }
         if (rowScore == 3) {
-            return alert(`${marker} has won!`)
+            return true
         }
     }
 
     // check diagonals
-    if (positions[0] && positions[4] && positions[8] == marker
-        || positions[2] && positions[4] && positions[6] == marker
+    if (positions[0] == marker && positions[4] == marker && positions[8] == marker || 
+        positions[2] == marker && positions[4] == marker && positions[6] == marker
     ) {
-        return alert(`${marker} has won!`)
+        return true
     }
-
 }
 
 const renderGrid = function () {
@@ -63,42 +62,113 @@ const renderGrid = function () {
 
 // Bug: turns are never switched. O's can never be placed.
 
-const playGame = function () {
-    let loadSquares = 1;
-    let turn = "X"; // keep track of who's turn it is
-
-    while (loadSquares == 1) {
-        if (turn == "X") {
-            for (const square of document.querySelectorAll(".square")) {
-                square.addEventListener("click", () => {
-                    if (square.innerText != "X" || "O" ) {
-                        square.innerText = "X";
-                        turn = "O"; // change turns
-                        gameBoard.getGameBoard(); // log the current board
-                        renderGrid()
-                        checkWin("X");
-                        loadSquares = 1;
-                    }
-                });
-                loadSquares = 0;
-            }
-        }
-        if (turn == "O") {
-            for (const square of document.querySelectorAll(".square")) {
-                square.addEventListener("click", () => {
-                    if (square.innerText != "X" || "O" ) {
-                        square.innerText = "O";
-                        turn = "X"; // change turns
-                        gameBoard.getGameBoard();
-                        renderGrid();
-                        checkWin("O");
-                        loadSquares = 1;
-                    }
-                });
-                loadSquares = 0;
-            }
-        }
+const createSquares = function () {
+    const gridContainer = document.querySelector(".grid-container")
+    for (let i=0; i<9; i++) {
+        const square = document.createElement("div");
+        square.classList.add("square");
+        gridContainer.appendChild(square);
     }
+
+}
+
+const removeSquares = function () {
+    const gridContainer = document.querySelector(".grid-container");
+    while (gridContainer.firstChild) {
+        gridContainer.removeChild(gridContainer.firstChild);
+    }
+}
+
+const loadSquaresX = function () {
+    console.log(gameBoard.positions)
+    if (checkWin("O")) {
+        gameEnd("O");
+    } else {
+        removeSquares();
+        createSquares();
+        renderGrid();
+        for (const square of document.querySelectorAll(".square")) {
+            square.addEventListener("click", () => {
+                if (square.innerHTML != "X" && square.innerHTML != "O") {
+                    square.innerText = "X";
+                    gameBoard.getGameBoard(); // log the current board
+                    renderGrid();
+                    loadSquaresO();
+                }
+            }
+        )};
+    }
+    
+}
+
+const loadSquaresO = function () {
+    console.log(gameBoard.positions)
+    if (checkWin("X")) {
+        gameEnd("X");
+    } else {
+        removeSquares();
+        createSquares();
+        renderGrid();
+        for (const square of document.querySelectorAll(".square")) {
+            square.addEventListener("click", () => {
+                if (square.innerHTML != "X" && square.innerHTML != "O") {
+                    square.innerText = "O";
+                    gameBoard.getGameBoard(); // log the current board
+                    renderGrid();
+                    loadSquaresX();
+                }
+            }
+        )};
+    }
+    
+}
+
+const resetGame = function () {
+
+    // check if document has h3 and br element
+    if (document.querySelectorAll("h3").length != 0) {
+        const textBreak = document.querySelector("br");
+        const winMessage = document.querySelector("h3");
+        const resetButton = document.querySelector("button");
+        
+        winMessage.remove();
+        textBreak.remove();
+
+        resetButton.innerText = "Reset"
+    }
+
+    gameBoard.positions = ["", "", "", "", "", "", "", "", ""];
+    removeSquares();
+    createSquares();
+    playGame();
+}
+
+const gameEnd = function (winner) {
+
+    // Get rid of any existing event listeners after game ends
+    removeSquares();
+    createSquares();
+    renderGrid();
+
+    const headingContainer = document.querySelector(".heading-container")
+    const resetButton = document.querySelector("button");
+    const winMessage = document.createElement("h3");
+    const textBreak = document.createElement("br");
+
+    winMessage.innerText = `${winner} has won the game!`
+
+    headingContainer.insertBefore(winMessage, resetButton);
+    headingContainer.insertBefore(textBreak, winMessage);
+
+    resetButton.innerText = "Play Again?"
+}
+
+const playGame = function () {
+    const resetButton = document.querySelector("button");
+    resetButton.addEventListener("click", function () {
+        resetGame();
+    })
+    loadSquaresX();
 }
 
 playGame();
