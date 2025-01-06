@@ -10,11 +10,6 @@ const gameBoard = (function () {
     return { positions, getGameBoard}
 })();
 
-// gameBoard.placeMarker("X", 2);
-// gameBoard.placeMarker("X", 4);
-// gameBoard.placeMarker("X", 6);
-console.log(gameBoard.positions);
-
 const checkWin = function (marker) {
     let positions = gameBoard.positions;
 
@@ -60,8 +55,6 @@ const renderGrid = function () {
     }
 }
 
-// Bug: turns are never switched. O's can never be placed.
-
 const createSquares = function () {
     const gridContainer = document.querySelector(".grid-container")
     for (let i=0; i<9; i++) {
@@ -80,11 +73,10 @@ const removeSquares = function () {
 }
 
 const loadSquaresX = function () {
-    console.log(gameBoard.positions)
     if (checkWin("O")) {
         gameEnd("O");
     } else {
-        removeSquares();
+        removeSquares(); // recreate the squares to clear existing event listeners
         createSquares();
         renderGrid();
         for (const square of document.querySelectorAll(".square")) {
@@ -93,7 +85,7 @@ const loadSquaresX = function () {
                     square.innerText = "X";
                     gameBoard.getGameBoard(); // log the current board
                     renderGrid();
-                    loadSquaresO();
+                    loadSquaresO(); // switch to O's turn
                 }
             }
         )};
@@ -102,7 +94,6 @@ const loadSquaresX = function () {
 }
 
 const loadSquaresO = function () {
-    console.log(gameBoard.positions)
     if (checkWin("X")) {
         gameEnd("X");
     } else {
@@ -115,7 +106,7 @@ const loadSquaresO = function () {
                     square.innerText = "O";
                     gameBoard.getGameBoard(); // log the current board
                     renderGrid();
-                    loadSquaresX();
+                    loadSquaresX(); // switch to X's turn
                 }
             }
         )};
@@ -164,10 +155,14 @@ const gameEnd = function (winner) {
 }
 
 const playGame = function () {
+
+    // add reset button fuctionality
     const resetButton = document.querySelector("button");
     resetButton.addEventListener("click", function () {
         resetGame();
     })
+
+    // load X first since X starts
     loadSquaresX();
 }
 
