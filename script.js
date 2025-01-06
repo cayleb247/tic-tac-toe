@@ -47,6 +47,17 @@ const checkWin = function (marker) {
     }
 }
 
+const checkTie = function () {
+    let positions = gameBoard.positions;
+
+    for (const position of positions) {
+        if (position != "X" && position != "O") {
+            return false
+        }
+    }
+    return true
+}
+
 const renderGrid = function () {
     squares = document.querySelectorAll(".square")
     positions = gameBoard.positions
@@ -75,6 +86,8 @@ const removeSquares = function () {
 const loadSquaresX = function () {
     if (checkWin("O")) {
         gameEnd("O");
+    } else if (checkTie()) {
+        gameEnd() // call gameEnd without argument to signify a tie
     } else {
         removeSquares(); // recreate the squares to clear existing event listeners
         createSquares();
@@ -96,6 +109,8 @@ const loadSquaresX = function () {
 const loadSquaresO = function () {
     if (checkWin("X")) {
         gameEnd("X");
+    } else if (checkTie()) {
+        gameEnd()
     } else {
         removeSquares();
         createSquares();
@@ -146,7 +161,11 @@ const gameEnd = function (winner) {
     const winMessage = document.createElement("h3");
     const textBreak = document.createElement("br");
 
-    winMessage.innerText = `${winner} has won the game!`
+    if (winner) {
+        winMessage.innerText = `${winner} has won the game!`
+    } else {
+        winMessage.innerText = "It's a tie!"
+    }
 
     headingContainer.insertBefore(winMessage, resetButton);
     headingContainer.insertBefore(textBreak, winMessage);
